@@ -76,7 +76,13 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 	 * @return the basicUnitsCodesTable
 	 */
 	protected Map<Integer, Unit> getBasicUnitsCodesTable() {
-		return basicUnitsCodesTable;
+		Map<Integer, Unit> basicCodesTable = new HashMap<>();
+		basicCodesTable.putAll(basicUnitsCodesTable);
+		for (String key : classesTable.keySet()) {
+			Unit unit = new Unit(classesTable.get(key));
+			basicCodesTable.put(unit.getCode().getNumCodes().get(0), unit);
+		}
+		return basicCodesTable;
 	}
 
 	/**
@@ -129,7 +135,9 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 	public Boolean visitUnitsFile(UnitsFileContext ctx) {
 		
 		// add dimensionless Unit number
-		unitsTable.put("number", new Unit("number", "", new Code(1)));
+		Unit number = new Unit("number", "", new Code(1));
+		unitsTable.put("number", number);
+		basicUnitsCodesTable.put(1, number);
 		
 		Boolean valid = true;
 		for (DeclarationContext dec : ctx.declaration()) {
@@ -180,6 +188,8 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 		reservedWords.add(symbol);
 		unitsGraph.addVertex(u);
 		unitsCtx.put(ctx, u);
+		
+		unitsGraph.addEdge(1.0, u, u);
 
 		if (debug) {
 			ErrorHandling.printInfo(ctx, "Added Basic Unit " + u + "\n\tOriginal line: " + ctx.getText() + ")\n");
@@ -212,6 +222,8 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 		unitsGraph.addVertex(u);
 		unitsCtx.put(ctx, u);
 		
+		unitsGraph.addEdge(1.0, u, u);
+		
 
 		if (debug) {
 			ErrorHandling.printInfo(ctx, "Added Derived Unit " + u + "\n\tOriginal line: " + ctx.getText() + ")\n");
@@ -243,7 +255,7 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 		}
 
 		if (debug) {
-			ErrorHandling.printInfo(ctx, "Added Or Derived Unit " + u + "\n\tOriginal line: " + ctx.getText() + ")\n");
+			ErrorHandling.printInfo(ctx, "Added Equivalent Unit " + u + "\n\tOriginal line: " + ctx.getText() + ")\n");
 		}
 		
 		return true;
@@ -287,6 +299,8 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 		classesTable.put(className, u); 	// goes to own table so its not prefixed later
 		unitsCtx.put(ctx, u);				// goes to Units ParseTree because it is a Unit.
 		reservedWords.add(className);
+		
+		unitsGraph.addEdge(1.0, u, u);
 		
 		return true;
 	}
@@ -350,13 +364,13 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 		Unit a = unitsCtx.get(ctx.unitsDerivation(0));
 		Unit b = unitsCtx.get(ctx.unitsDerivation(1));
 
-		Unit res;
+		Code res;
 		if (ctx.op.getText().equals("*"))
-			res = Units.multiply(a, b);
+			res = Code.multiply(a.getCode(), b.getCode());
 		else
-			res = Units.divide(a, b);
+			res = Code.divide(a.getCode(), b.getCode());
 
-		unitsCtx.put(ctx, res);
+		unitsCtx.put(ctx, new Unit(res));
 
 		return true;
 	}
@@ -388,9 +402,9 @@ public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 		}
 		
 		// calculate the powered unit
-		Unit res = Units.power(u, power);
+		Code res = Code.power(u.getCode(), power);
 		
-		unitsCtx.put(ctx, res);
+		unitsCtx.put(ctx, new Unit(res));
 		return true;
 
 	}

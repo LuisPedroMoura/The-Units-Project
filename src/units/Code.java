@@ -15,6 +15,7 @@ package unitsGrammar.grammar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <b>Code</b><p>
@@ -93,11 +94,9 @@ public class Code {
 	 * @return if the two codes are equivalent returns the Code of <b>a<b>
 	 * @throws IllegalArgumentException if the Codes are not equivalent
 	 */
-	public static Code add(Code a, Code b) throws IllegalArgumentException {
-		if (!a.equals(b)) {
-			throw new IllegalArgumentException();
-		}
-		return a;
+	protected static double add(Code a, Code b) throws IllegalArgumentException {
+		double factor = matchCodes(a, b, Units.getConversionTable(), Units.getBasicUnitsCodesTable()); // matches 'b' to ´a´
+		return factor;
 	}
 	
 	/**
@@ -105,11 +104,9 @@ public class Code {
 	 * @param b
 	 * @return a new Code resulting of the multiplication of the two Codes
 	 */
-	public static Code subtract(Code a, Code b) throws IllegalArgumentException {
-		if (!a.equals(b)) {
-			throw new IllegalArgumentException();
-		}
-		return a;
+	protected static double subtract(Code a, Code b) throws IllegalArgumentException {
+		double factor = matchCodes(a, b, Units.getConversionTable(), Units.getBasicUnitsCodesTable()); // matches 'b' to ´a´
+		return factor;
 	}
 	
 	/**
@@ -117,12 +114,11 @@ public class Code {
 	 * @param b
 	 * @return a new Code resulting of the multiplication of the two Codes
 	 */
-	public static Code multiply(Code a, Code b) {
+	protected static Code multiply(Code a, Code b) {
 		Code newCode = new Code();
 		newCode.multiplyCode(a);
 		newCode.multiplyCode(b);
 		newCode.simplifyCode();
-		newCode.simplifyCodeWithConvertions(Units.getConversionTable(), Units.getBasicUnitsCodesTable());
 		return newCode;
 	}
 	private void multiplyCode(Code code) {
@@ -143,7 +139,7 @@ public class Code {
 		Code newCode = new Code();
 		newCode.multiplyCode(a);
 		newCode.divideCode(b);
-		newCode.simplifyCodeWithConvertions(Units.getConversionTable(), Units.getBasicUnitsCodesTable());
+		newCode.simplifyCode();
 		return newCode;
 	}
 	private void divideCode(Code code) {
@@ -160,12 +156,13 @@ public class Code {
 	 * @param exponent
 	 * @return a new Code resulting of the power of the Code
 	 */
-	public static Code power(Code a, int exponent) {
+	protected static Code power(Code a, int exponent) {
 		Code newCode = new Code();
 		for (int i = 0; i < exponent; i++) {
 			newCode.multiplyCode(a);
 		}
-		newCode.simplifyCodeWithConvertions(Units.getConversionTable(), Units.getBasicUnitsCodesTable());
+		newCode.simplifyCode();
+		//newCode.simplifyCodeWithConvertions(Units.getConversionTable(), Units.getBasicUnitsCodesTable());
 		return newCode;
 	}
 	
@@ -174,12 +171,27 @@ public class Code {
 	 * This method does a simple simplification by removing duplicate codes in the Code numerator and denominator.
 	 */
 	private void simplifyCode() {
+		
+		if (numCodes.size() == 1 && numCodes.get(0) == 1 && denCodes.size() == 0) {
+			return;
+		}
+		
+		numCodes.removeIf(c -> c == 1);
+		denCodes.removeIf(c -> c == 1);
+		
+		List<Integer> aux = new ArrayList<>();
 		for (Integer numCode : numCodes) {
 			if (denCodes.contains(numCode)) {
-				numCodes.remove(numCode);
-				denCodes.remove(numCode);
+				aux.add(numCode);
 			}
 		}
+		numCodes.removeAll(aux);
+		denCodes.removeAll(aux);
+		
+		if (numCodes.size() == 0 && denCodes.size() == 0) {
+			numCodes.add(1);
+		}
+		
 	}
 	
 	/**
@@ -201,21 +213,21 @@ public class Code {
 		return factor;
 	}
 	// TODO not very efficient (think of what structure to use)
-	private double simplifyCodeWithConvertionsPrivate(Map<Unit, Map<Unit, Double>> conversionTable, Map<Integer, Unit> basicUnitsCodesTable) {
-
+	private Double simplifyCodeWithConvertionsPrivate(Map<Unit, Map<Unit, Double>> conversionTable, Map<Integer, Unit> basicUnitsCodesTable) {
+		
 		for (int numCode : this.numCodes) {
 			Unit numUnit = basicUnitsCodesTable.get(numCode);
 			for (int denCode : this.denCodes) {
 				Unit denUnit = basicUnitsCodesTable.get(denCode);
-				double conversionFactor = conversionTable.get(numUnit).get(denUnit);
-				if (conversionFactor != Double.POSITIVE_INFINITY){
-					numCodes.remove(numCode);
-					denCodes.remove(denCode);
+				Double conversionFactor = conversionTable.get(numUnit).get(denUnit);
+				if (conversionFactor != null && conversionFactor != Double.POSITIVE_INFINITY){
+					numCodes.remove(numCodes.indexOf(numCode));
+					denCodes.remove(denCodes.indexOf(denCode));
 					return conversionFactor;
 				}
 			}
 		}
-		return 1.0;
+		return null;
 	}
 	
 	/**
@@ -227,28 +239,28 @@ public class Code {
 	 * @param basicUnitsCodesTable, a Table with all the basic codes that compose a derivated Code
 	 * @return the conversion factor obtained from the Code conversion. To be used if a Quantity is associated with the Unit.
 	 */
-	protected double matchCodes(Code a, Map<Unit, Map<Unit, Double>> conversionTable, Map<Integer, Unit> codesTable) {
-		
-		// Codes are equal, no matching is needed. Quantity conversion factor is neutral.
-		if (this.equals(a)) {
-			return 1.0;
-		}
-		
-		// Codes size does not match -> Codes are not equivalent
-		if (this.numCodes.size() != a.getNumCodes().size() || this.denCodes.size() != a.getDenCodes().size()) {
-			throw new IllegalArgumentException();
-		}
-		
-		a = new Code(a); // deep copy
-		Code b = new Code(this); // deep copy
-		int codeSize = this.numCodes.size() + this.denCodes.size();
-
-		Double conversionFactor = 1.0;
-		Double localFactor = 1.0;
+	protected static double matchCodes(Code a, Code b, Map<Unit, Map<Unit, Double>> conversionTable, Map<Integer, Unit> codesTable) {
 		
 		// First simplify codes
 		a.simplifyCode();
 		b.simplifyCode();
+		
+		// Codes are equal, no matching is needed. Quantity conversion factor is neutral.
+		if (b.equals(a)) {
+			return 1.0;
+		}
+		
+		// Codes size does not match -> Codes are not equivalent
+		if (b.numCodes.size() != a.getNumCodes().size() || b.denCodes.size() != a.getDenCodes().size()) {
+			throw new IllegalArgumentException();
+		}
+		
+		a = new Code(a); // deep copy
+		b = new Code(b); // deep copy
+		int codeSize = b.numCodes.size() + b.denCodes.size();
+
+		Double conversionFactor = 1.0;
+		Double localFactor = 1.0;
 		
 		List<Integer> AnumCodes = a.getNumCodes();
 		List<Integer> BnumCodes = b.getNumCodes();
@@ -335,6 +347,7 @@ public class Code {
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -342,17 +355,20 @@ public class Code {
 		if (getClass() != obj.getClass())
 			return false;
 		Code other = (Code) obj;
-		if (denCodes == null) {
+		if (denCodes == null)
 			if (other.denCodes != null)
 				return false;
-		} else if (!denCodes.equals(other.denCodes))
-			return false;
-		if (numCodes == null) {
+		if (numCodes == null)
 			if (other.numCodes != null)
 				return false;
-		} else if (!numCodes.equals(other.numCodes))
-			return false;
-		return true;
+		if (this.numCodes.size() == other.numCodes.size() && this.denCodes.size() == other.denCodes.size()) {
+			if (this.numCodes.containsAll(other.numCodes) && other.numCodes.containsAll(this.numCodes)) {
+				if (this.denCodes.containsAll(other.denCodes) && other.denCodes.containsAll(this.denCodes)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
-	
+
 }

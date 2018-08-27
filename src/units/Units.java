@@ -25,6 +25,8 @@ import utils.errorHandling.ErrorHandling;
 import utils.errorHandling.ErrorHandlingListener;
 
 public class Units {
+	
+	private static final boolean debug = true;
 
 	// Instance Fields
 	private static Map<Integer, Unit>	basicUnitsCodesTable	= new HashMap<>();
@@ -88,8 +90,37 @@ public class Units {
 			// Information to be transmitted to the Potatoes Semantic Checker
 			Units.basicUnitsCodesTable	= visitor0.getBasicUnitsCodesTable();
 			Units.unitsTable			= visitor0.getAllUnits();
-			Units.conversionTable		= (new GraphInfo(visitor0.getUnitsGraph())).getPathsTable();
 			Units.reservedWords			= visitor0.getReservedWords();
+			Graph unitsGraph			= visitor0.getUnitsGraph();
+			GraphInfo graphInfo			= new GraphInfo(unitsGraph);
+			Units.conversionTable		= graphInfo.getAllMinJumpsPathCostsTable();
+			
+			// update conversion Table with Unit 'number which cannot be put in the graph
+			// (because it connects to everything and would allow conversion between all unrelated units)
+			Map<Unit, Double> map = new HashMap<>();
+			Unit number = new Unit("number", "", new Code(1));
+			for (String key : unitsTable.keySet()) {
+				map.put(unitsTable.get(key), 1.0);
+				if (conversionTable.containsKey(unitsTable.get(key))) {
+					conversionTable.get(unitsTable.get(key)).put(number, 1.0);
+				}
+			}
+			conversionTable.put(number, map);
+			
+			if (debug) {
+				System.out.println("####################################\n####################################\n");
+				System.out.println("UNITS GRAPH\n");
+				System.out.println(unitsGraph);
+				System.out.println("####################################\n####################################\n");
+				System.out.println("CONVERSION TABLE\n");
+				for (Unit key : conversionTable.keySet()) {
+					System.out.println("\n" + key + "->->->");
+					for (Unit key2 : conversionTable.get(key).keySet()) {
+						System.out.println("\t" + key2 + "->->" + conversionTable.get(key).get(key2));
+					}
+				}
+				System.out.println("####################################\n####################################\n");
+			}
 		}
 		else {
 			System.exit(3);
@@ -124,7 +155,7 @@ public class Units {
 	/**
 	 * @return reservedWords, the list of all Unit names, prefixed names, symbols, and Class of Units names
 	 */
-	public static List<String> getReservedWords(){
+	protected static List<String> getReservedWords(){
 		return reservedWords;
 	}
 	
@@ -137,16 +168,38 @@ public class Units {
 	 */
 	public static Unit instanceOf(String name) {
 		if (unitsTable.containsKey(name)) {
-			return getUnitsTable().get(name);
+			return new Unit(getUnitsTable().get(name));
 		}
 		else if (reservedWords.contains(name)){
 			for (String key : unitsTable.keySet()) {
 				if (unitsTable.get(key).getSymbol().equals(name)) {
-					return unitsTable.get(key);
+					return new Unit(unitsTable.get(key));
 				}
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * @param a String that is the name or symbol of the Unit
+	 * @return an instance of Unit Class
+	 */
+	public static boolean exists(String name) {
+		if (unitsTable.containsKey(name)) {
+			return true;
+		}
+		else if (reservedWords.contains(name)){
+			for (String key : unitsTable.keySet()) {
+				if (unitsTable.get(key).getSymbol().equals(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isReservedWord(String name) {
+		return reservedWords.contains(name);
 	}
 	
 	/**
@@ -155,9 +208,9 @@ public class Units {
 	 * @return new Unit equal to both arguments if they are equal.
 	 * @throws IllegalArgumentException if the two Unit are not compatible
 	 */
-	public static Unit add(Unit a, Unit b) {
-		// FIXME add verifications, try to come up with idea to give correct unit Name
-		return new Unit(Code.add(a.getCode(), b.getCode()));
+	public static Tuple add(Unit a, Unit b) throws IllegalArgumentException {
+		double factor = Code.add(a.getCode(), b.getCode());
+		return new Tuple(new Unit(a.getCode()), factor);
 	}
 
 	/**
@@ -166,30 +219,36 @@ public class Units {
 	 * @return new Unit equal to both arguments if they are equal.
 	 * @throws IllegalArgumentException if the two Unit are not compatible
 	 */
-	public static Unit subtract(Unit a, Unit b) {
-		return new Unit(Code.subtract(a.getCode(), b.getCode()));
+	public static Tuple subtract(Unit a, Unit b) {
+		double factor = Code.subtract(a.getCode(), b.getCode());
+		return new Tuple(new Unit(a.getCode()), factor);
 	}
 	
 	/**
 	 * @return new Unit with correspondent code resulting of the multiplication of two Units.
 	 */
-	public static Unit multiply(Unit a, Unit b) {
-		// FIXME add verifications, try to come up with idea to give correct unit Name
-		return new Unit(Code.multiply(a.getCode(), b.getCode()));
+	public static Tuple multiply(Unit a, Unit b) {
+		Code mult = Code.multiply(a.getCode(), b.getCode());
+		double factor = mult.simplifyCodeWithConvertions(conversionTable, basicUnitsCodesTable);
+		return new Tuple(new Unit(mult), factor);
 	}
 
 	/**
 	 * @return new Unit with correspondent code resulting of the division of two Units.
 	 */
-	public static Unit divide(Unit a, Unit b) {
-		return new Unit(Code.divide(a.getCode(), b.getCode()));
+	public static Tuple divide(Unit a, Unit b) {
+		Code div = Code.divide(a.getCode(), b.getCode());
+		double factor = div.simplifyCodeWithConvertions(conversionTable, basicUnitsCodesTable);
+		return new Tuple(new Unit(div), factor);
 	}
 	
 	/**
 	 * @return new Unit with correspondent code resulting of the power of the Unit.
 	 */
-	public static Unit power(Unit a, int exponent) {
-		return new Unit(Code.power(a.getCode(), exponent));
+	public static Tuple power(Unit a, int exponent) {
+		Code pow = Code.power(a.getCode(), exponent);
+		double factor = pow.simplifyCodeWithConvertions(conversionTable, basicUnitsCodesTable);
+		return new Tuple(new Unit(pow), factor);
 	}
 	
 	// --------------------------------------------------------------------------
