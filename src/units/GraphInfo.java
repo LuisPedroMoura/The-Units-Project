@@ -7,7 +7,7 @@
 *
 ***************************************************************************************/
 
-package unitsGrammar.grammar;
+package units;
 
 import static java.lang.System.out;
 

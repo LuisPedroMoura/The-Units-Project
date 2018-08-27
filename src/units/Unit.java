@@ -11,7 +11,7 @@
 *
 ***************************************************************************************/
 
-package unitsGrammar.grammar;
+package units;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package unitsGrammar.grammar;
+package units;
 
 
 public class Tuple extends Pair<Unit,Double>{

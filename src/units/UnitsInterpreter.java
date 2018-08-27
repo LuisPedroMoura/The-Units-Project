@@ -8,7 +8,7 @@
 *
 ***************************************************************************************/
 
-package unitsGrammar.grammar;
+package units;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +18,7 @@ import java.util.Map;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
-import unitsGrammar.grammar.UnitsParser.*;
-import unitsGrammar.grammar.Units;
+import units.UnitsParser.*;
 import utils.errorHandling.ErrorHandling;
 
 /* HOW TO

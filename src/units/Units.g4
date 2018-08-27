@@ -11,7 +11,7 @@
 grammar Units;
 
 @header{
-package unitsGrammar.grammar;
+package units;
 }
 
 // -----------------------------------------------------------------------------

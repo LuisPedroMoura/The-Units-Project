@@ -8,7 +8,7 @@
 *
 ***************************************************************************************/
 
-package unitsGrammar.grammar;
+package units;
 
 import java.io.*;
 import java.util.ArrayList;

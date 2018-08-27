@@ -1,4 +1,4 @@
-package unitsGrammar.grammar;
+package units;
 
 public class Pair<T, V> {
 
