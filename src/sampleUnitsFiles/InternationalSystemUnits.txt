@@ -1,0 +1,71 @@
+units {
+	
+	// Base Units
+	meter		"m";
+	gram		"g";
+	second		"s";
+	ampere		"A";
+	kelvin		"K";
+	mole		"mol";
+	candela		"cd";
+	randian 	"rad";	// is know defined as dimensionless derived unit
+	steradian	"sr";	// is know defined as dimensionless derived unit
+	
+	// Derived Units
+	hertz	"Hz"	:	second^-1;
+	newton	"N"	:	(gram^3 * meter) / second^2;
+	pascal	"Pa"	:	newton / meter^2;
+	joule	"J"	:	newton * meter;
+	watt	"W"	:	joule / second;
+	coulomb	"C"	:	second * ampere;
+	volt	"V"	:	watt / ampere;
+	farad	"F"	:	coulomb / volt;
+	ohm	"Ω"	:	volt / ampere;
+	siemens	"S"	:	ohm^-1;
+	weber	"Wb"	:	volt * second;
+	tesla	"T"	:	weber / meter^2;
+	henry	"H"	:	weber / ampere;
+	Celsius	"°C"	:	(273.15)kelvin;		// Equivalent Unit
+	lumen	"lm"	:	candela * steradian;
+	lux	"lx"	:	lumen / meter^2;
+	katal	"kat"	:	mole / second
+	gray	"Gy"	:	joule / gram^3;
+	//becquerel "Bq":	second^-1;		// ambiguous with hertz. Must choose one or the other
+	//sievert "Sv"	:	joule / gram^3;	// ambiguous with hertz. Must choose one or the other. Or make it 'sievert "Sv" : gray'
+	
+	
+	squareMeter	"m^2"	:	mter^2;
+	area	[squareMeter]	:	(1) squareMeter;	
+	cubicMeter "m^3"	:	meter^3;
+	litre	"l";
+	volume	[litre]		:	(1/1000) cubicMeter;
+	ton	"t"		:	(1000000) gram;	
+	
+}
+
+
+prefixes {
+	
+	yotta	"Y"	: 10^24;
+	yotta	"Z"	: 10^21;
+	yotta	"E"	: 10^18;
+	yotta	"P"	: 10^15;
+	yotta	"T"	: 10^12;
+	yotta	"G"	: 10^9;
+	yotta	"M"	: 10^6;
+	yotta	"k"	: 10^3;
+	yotta	"h"	: 10^2;
+	yotta	"da"	: 10;
+	yotta	"d"	: 10^-1;
+	yotta	"c"	: 10^-2;
+	yotta	"m"	: 10^-3;
+	yotta	"µ"	: 10^-6;
+	yotta	"n"	: 10^-9;
+	yotta	"p"	: 10^-12;
+	yotta	"f"	: 10^-15;
+	yotta	"a"	: 10^-18;
+	yotta	"z"	: 10^-21;
+	yotta	"y"	: 10^-24;
+	
+}
+
