@@ -8,8 +8,8 @@ units {
 	kelvin		"K";
 	mole		"mol";
 	candela		"cd";
-	randian 	"rad";	// is know defined as dimensionless derived unit
-	steradian	"sr";	// is know defined as dimensionless derived unit
+	randian 	"rad";	// is now defined as dimensionless derived unit
+	steradian	"sr";	// is now defined as dimensionless derived unit
 	
 	// Derived Units
 	hertz	"Hz"	:	second^-1;
@@ -31,7 +31,7 @@ units {
 	katal	"kat"	:	mole / second
 	gray	"Gy"	:	joule / gram^3;
 	//becquerel "Bq":	second^-1;		// ambiguous with hertz. Must choose one or the other
-	//sievert "Sv"	:	joule / gram^3;	// ambiguous with hertz. Must choose one or the other. Or make it 'sievert "Sv" : gray'
+	//sievert "Sv"	:	joule / gram^3;	// ambiguous with gray. Must choose one or the other. Or make it 'sievert "Sv" : gray'
 	
 	
 	squareMeter	"m^2"	:	mter^2;
