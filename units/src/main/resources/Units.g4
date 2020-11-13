@@ -1,12 +1,10 @@
-/***************************************************************************************
-*	Title: PotatoesProject - Units Grammar Source Code
-*	Code version: 2.0
-*	Author: Luis Moura (https://github.com/LuisPedroMoura)
-*	Author of version 1.0: Pedro Teixeira (https://pedrovt.github.io),
-*	Date: July-2018
-*	Availability: https://github.com/LuisPedroMoura/PotatoesProject
-*
-***************************************************************************************/
+/*-------------------------------------------------------------------------
+Title: The Units Project - UnitsInterpreter Source Code
+Author: Luis Moura (https://github.com/LuisPedroMoura)
+Author of version 1.0: Pedro Teixeira (https://pedrovt.github.io),
+Date: July-2018
+Availability: https://github.com/LuisPedroMoura/The_Units_Project
+-------------------------------------------------------------------------*/
 
 grammar Units;
 

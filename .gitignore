@@ -1,20 +1,17 @@
 /bin/
-
 *.tokens
-
 *.class
-
 *.interp
-
 antlr/src/
-
 antlr/stringtemplate/
-
 antlr/antlr4_src\.zip
-
 antlr/src\.zip
-
+target/
+/target
 /target/*
+.idea/
+/.classpath
+/.project
 
 
 TypesBaseListener.java
@@ -26,7 +23,7 @@ PotatoesBaseListener.java
 PotatoesBaseVisitor.java
 PotatoesListener.java
 PotatoesVisitor.java
-
+*/*.iml
 *Lexer.java
 *Parser.java
 src/test

@@ -1,10 +1,13 @@
+/*
+ * Title: The Units Project
+ * Availability: https://github.com/LuisPedroMoura/The_Units_Project
+ */
+
 /***************************************************************************************
 *	Title: PotatoesProject - Code Class Source Code
 *	Code version: 2.0
 *	Author: Luis Moura (https://github.com/LuisPedroMoura)
-*	Acknowledgments for version 1.0: Maria Joao Lavoura (https://github.com/mariajoaolavoura),
-*	for the help in brainstorming the concepts needed to create the first working version
-*	of this Class.
+*
 *	Date: July-2018
 *	Availability: https://github.com/LuisPedroMoura/PotatoesProject
 *
@@ -17,15 +20,52 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <b>Code</b><p>
+ * Class that deals with operations of Codes that distinguish different Units.
+ *
+ * A Code is comprised of a numerator and a denominator. both are lists of
+ * numbers. The Code Class is used to identify the operations between different
+ * Units.
+ * A Code is equal to another if it has the same values in both the numerator
+ * and denominator. The order is not relevant.
+ * IMPORTANT: For the Codes operation to work it is mandatory that the Units are
+ * created with non repeated Codes. A basic Unit should have a code of
+ * ([value]/[1])
+ *
+ * How does the Code guarantees correct operations on units? For example:
+ * meter + meter    -> meter
+ * meter * meter    -> meter squared
+ * meter + inch     -> meter or inch? Same dimension though
+ * meter / inch     -> just a number, no units
+ * meter + liter    -> ERROR
+ * meter / kilogram -> meter per kilogram
+ * meter * kilogram -> meter kilogram
+ *
+ * Lets consider the following units:
+ *
+ *- Unit meter -> Code is [2]/[1]
+ * - inch
+ * Addition and subtraction:
+ * - Codes must match both in the numerator and denominator.
+ *
+ * Multiplication:
+ * -
+ * Acknowledgments for version 1.0: Maria Joao Lavoura
+ * (https://github.com/mariajoaolavoura), for the help in brainstorming the
+ * concepts needed to create the first working version of this Class.
  * 
  * @author Luis Moura (https://github.com/LuisPedroMoura)
- * @version 2.0 - July 2018
+ * @version 2.0.0
  */
 public class Code {
-	
-	private List<Integer> numCodes = new ArrayList<>();;		// numerator codes
-	private List<Integer> denCodes = new ArrayList<>();;		// denominator codes
+
+	/**
+	 * The list of numerator code values.
+	 */
+	private List<Integer> numCodes = new ArrayList<>();
+	/**
+	 * THe list of denominator values.
+	 */
+	private List<Integer> denCodes = new ArrayList<>();
 	
 	/**
 	 * Constructor of empty Code, to use in Units operations

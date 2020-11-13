@@ -8,7 +8,6 @@
 *	of this Class that could deal with different unit Variables operations.
 *	Date: July-2018
 *	Availability: https://github.com/LuisPedroMoura/PotatoesProject
-*
 ***************************************************************************************/
 
 package units.units;

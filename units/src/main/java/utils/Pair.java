@@ -1,11 +1,19 @@
+/*
+ * Title: The Units Project
+ * Availability: https://github.com/LuisPedroMoura/The_Units_Project
+ */
+
 package utils;
 
 /**
- * Generic class that holds two Objects.
+ * Generic class that stores two Objects. Used ideally as a way to return two values from a method.
  * @implNote this class could have easily been imported, but was done as an academic exercise.
  *
  * @param <T> the type for the first parameter.
  * @param <V> the type for the second parameter.
+ *
+ * @author Luis Moura (https://github.com/LuisPedroMoura)
+ * @since 1.0.0
  */
 public class Pair<T, V> {
 
@@ -17,10 +25,16 @@ public class Pair<T, V> {
 	 * The second element of the pair
 	 */
 	private V second;
-	
+
+	/**
+	 * Pair Constructor
+	 * @param first		the first element to store in  the Pair.
+	 * @param second	the seconde element to store in the Pair.
+	 */
 	public Pair(T first, V second) {
 		this.first= first;
 		this.second = second;
+
 	}
 
 	/**

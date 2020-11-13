@@ -1,12 +1,10 @@
-/***************************************************************************************
-*	Title: PotatoesProject - UnitsInterpreter Source Code
-*	Code version: 2.0
-*	Author: Luis Moura (https://github.com/LuisPedroMoura)
-*	Author of version 1.0: Pedro Teixeira (https://pedrovt.github.io),
-*	Date: August-2018
-*	Availability: https://github.com/LuisPedroMoura/PotatoesProject
-*
-***************************************************************************************/
+/*-------------------------------------------------------------------------
+Title: The Units Project - UnitsInterpreter Source Code
+Author: Luis Moura (https://github.com/LuisPedroMoura)
+Author of version 1.0: Pedro Teixeira (https://pedrovt.github.io),
+Date: August-2018
+Availability: https://github.com/LuisPedroMoura/The_Units_Project
+-------------------------------------------------------------------------*/
 
 package units.units;
 
@@ -14,12 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
-import utils.errorHandling.ErrorHandling;
-
+import units.internal.errorhandling.ErrorHandling;
 
 public class UnitsInterpreter extends UnitsBaseVisitor<Boolean> {
 
